@@ -14,8 +14,10 @@ No necesitas instalar Python, Node.js, librerías ni servidores:
    ```bash
    git clone https://github.com/NachoFari/Poster-Saliency-IA.git
    ```
-2. Entra a la carpeta y haz **doble clic en `index.html`**.
-3. ¡Listo! Se abrirá inmediatamente en cualquier navegador (Chrome, Edge, Firefox, Safari) tanto en Windows, macOS o Linux, incluso **sin conexión a Internet**.
+2. Entra a la carpeta y elige cualquiera de las dos opciones:
+   * **Opción A (Universal - Windows / Mac / Linux)**: Haz doble clic en **`ABRIR_PROGRAMA.html`**.
+   * **Opción B (Modo Ventana de Escritorio en Windows)**: Haz doble clic en **`Iniciar_Modo_Ventana.bat`** (abre la app como una ventana independiente sin pestañas ni barra de direcciones).
+3. ¡Listo! Funciona inmediatamente incluso **sin conexión a Internet**.
 
 ---
 
@@ -64,8 +66,8 @@ El proyecto está dividido en módulos pequeños de responsabilidad única para 
 
 ```text
 Poster-Saliency-IA/
-├── index.html                   # Interfaz principal y lienzos superpuestos
-├── app.js                       # Punto de entrada ligero
+├── ABRIR_PROGRAMA.html          # Archivo principal (haz doble clic aquí para abrir)
+├── Iniciar_Modo_Ventana.bat     # Lanzador opcional en Windows (modo ventana nativa)
 ├── LICENSE                      # Licencia GNU General Public License v3.0
 ├── README.md                    # Documentación del proyecto
 ├── styles/
@@ -73,6 +75,7 @@ Poster-Saliency-IA/
 │   ├── viewer.css               # Visor interactivo y capas de Canvas apiladas
 │   └── panels.css               # Controles laterales y tarjetas de diagnóstico
 └── modules/
+    ├── app.js                   # Inicializador ligero
     ├── models.js                # Ecuaciones de los 3 modelos SOTA + Consenso
     ├── core-filters.js          # Filtros de visión (Sobel, BoxBlur, Gauss, Oponencia)
     ├── colormaps.js             # Tablas de color científicas (Turbo, Jet, Inferno, Hot)
