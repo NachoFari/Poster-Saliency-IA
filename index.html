@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaliencyVision - Atención Visual en Pósters Científicos</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/panels.css">
+    <link rel="stylesheet" href="styles/viewer.css">
+</head>
+<body>
+
+    <!-- Encabezado Superior -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">👁️</div>
+            <div>
+                <div style="display: flex; align-items: center;">
+                    <h1>SaliencyVision IA</h1>
+                    <a href="https://github.com/NachoFari" target="_blank" rel="noopener noreferrer" class="author-badge" title="Ir al GitHub de NachoFari">
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                        </svg>
+                        <span>Hecho por NachoFari</span>
+                    </a>
+                </div>
+                <div class="subtitle">Predicción de Atención Visual y Mapas de Calor para Pósters</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="btnSample" class="btn btn-secondary">
+                <span>📄 Cargar Póster Ejemplo</span>
+            </button>
+            <label class="btn btn-secondary" style="margin: 0; cursor: pointer;">
+                <span>📂 Subir Mi Póster</span>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            </label>
+            <button id="btnExport" class="btn btn-primary">
+                <span>💾 Descargar con Mapa de Calor</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Área de Trabajo Principal -->
+    <div class="app-layout">
+
+        <!-- Panel Izquierdo: Configuración del Modelo de IA y Parámetros -->
+        <aside class="sidebar">
+            <div class="panel-section">
+                <div class="panel-title">Modelo de IA (Estado del Arte)</div>
+                <div class="control-group">
+                    <select id="modelSelect">
+                        <option value="consenso" selected>⭐ Consenso IA (Coincidencia 3 Redes)</option>
+                        <option value="umsi">1. UMSI / PredImportance (MIT CSAIL)</option>
+                        <option value="deepgaze">2. DeepGaze IIE (Benchmark MIT Líder)</option>
+                        <option value="transalnet">3. TranSalNet (Vision Transformer)</option>
+                    </select>
+                </div>
+                <div id="modelBadge" class="model-badge">Máxima Certeza · Ensemble</div>
+                <div id="modelDesc" class="model-desc">
+                    Cruza simultáneamente UMSI, DeepGaze IIE y TranSalNet. Solo enciende en rojo las zonas donde las 3 arquitecturas coinciden.
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">Visualización del Mapa de Calor</div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Paleta Térmica</span>
+                    </div>
+                    <select id="colormapSelect">
+                        <option value="turbo" selected>Turbo (Científica / Google)</option>
+                        <option value="jet">Jet (Térmico Clásico)</option>
+                        <option value="inferno">Inferno (Perceptual Oscuro)</option>
+                        <option value="hot">Hot (Fuego / Gradiente)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Opacidad del Mapa</span>
+                        <span id="valOpacity" class="control-val">65%</span>
+                    </div>
+                    <input type="range" id="sliderOpacity" min="0" max="1" step="0.05" value="0.65">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Dispersión Foveal (Radio de mirada)</span>
+                        <span id="valBlur" class="control-val">16 px</span>
+                    </div>
+                    <input type="range" id="sliderBlur" min="6" max="40" step="2" value="16">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Filtro de Umbral (Solo focos altos)</span>
+                        <span id="valThreshold" class="control-val">0%</span>
+                    </div>
+                    <input type="range" id="sliderThreshold" min="0" max="0.7" step="0.05" value="0">
+                </div>
+
+                <div class="control-group" style="margin-top: 15px;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checkScanpath" checked>
+                        <span>Mostrar Recorrido Visual (1 ➔ 2 ➔ 3)</span>
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="checkSpotlight">
+                        <span>Modo Spotlight (Prueba de 3 segundos)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="https://github.com/NachoFari" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                    </svg>
+                    <span>Hecho por <strong>NachoFari</strong> · GNU GPLv3</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Visor Central: Póster con Lienzos Apilados -->
+        <main class="viewer-area" id="dropZone">
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <!-- Capa 1: Imagen del Póster -->
+                <canvas id="baseCanvas"></canvas>
+                <!-- Capa 2: Mapa de Calor (Atención visual sobre la imagen) -->
+                <canvas id="heatCanvas"></canvas>
+                <!-- Capa 3: Trayectoria Ocular (Sacadas y fijaciones) -->
+                <canvas id="scanpathCanvas"></canvas>
+            </div>
+
+            <div class="drop-overlay-hint">
+                <span>💡 Arrastra tu póster aquí o presiona <kbd>Ctrl + V</kbd> para pegar una captura</span>
+            </div>
+        </main>
+
+        <!-- Panel Derecho: Diagnóstico y Auditoría del Póster -->
+        <aside class="sidebar sidebar-right">
+            <div class="panel-section">
+                <div class="panel-title">Diagnóstico del Póster</div>
+                <div class="metric-card">
+                    <div id="metricVerdict" class="metric-status good">Jerarquía Visual Óptima</div>
+                    <div class="metric-grid">
+                        <div class="metric-box">
+                            <div id="metricHeader" class="metric-box-val">34%</div>
+                            <div class="metric-box-lbl">Captura Cabecera</div>
+                        </div>
+                        <div class="metric-box">
+                            <div id="metricDominance" class="metric-box-val">28%</div>
+                            <div class="metric-box-lbl">Fuerza Punto #1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Saturación / Carga Cognitiva</span>
+                        <span id="metricClutter" class="control-val">24/100</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">Puntos Focales Detectados</div>
+                <ul id="hotspotsList" class="hotspots-list">
+                    <!-- Dinámico vía JS -->
+                </ul>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">Recomendaciones de Diseño</div>
+                <ul id="adviceList" class="advice-list">
+                    <!-- Dinámico vía JS -->
+                </ul>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Módulos Livianos (Sin Dependencias Externas, 100% Portables) -->
+    <script src="modules/colormaps.js"></script>
+    <script src="modules/core-filters.js"></script>
+    <script src="modules/models.js"></script>
+    <script src="modules/scanpath.js"></script>
+    <script src="modules/saliency-engine.js"></script>
+    <script src="modules/poster-generator.js"></script>
+    <script src="modules/ui-controller.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
